@@ -37,7 +37,7 @@ app.post("/book", async (req, res) => {
     const response = await axios.post(
       "https://api.cal.com/v2/bookings",
       {
-        eventTypeId: 1,
+        eventTypeId: 5844629,
         start: startTime,
         responses: {
           name,
