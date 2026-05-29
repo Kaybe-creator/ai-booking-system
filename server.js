@@ -8,6 +8,7 @@ app.use(express.json());
 
 const CAL_API_KEY = process.env.CAL_API_KEY;
 
+// ✅ Test route
 app.get("/", (req, res) => {
   res.send("Server is working");
 });
@@ -17,12 +18,11 @@ app.get("/events", async (req, res) => {
   try {
     const response = await axios.get("https://api.cal.com/v2/event-types", {
       headers: {
-        Authorization: `Bearer ${CAL_API_KEY}`
-      }
+        Authorization: `Bearer ${CAL_API_KEY}`,
+      },
     });
 
     res.json(response.data);
-
   } catch (error) {
     console.error(error.response?.data || error.message);
     res.status(500).json(error.response?.data || error.message);
@@ -37,34 +37,34 @@ app.post("/book", async (req, res) => {
     const response = await axios.post(
       "https://api.cal.com/v2/bookings",
       {
-        eventTypeId: 5844629,
+        eventTypeId: 5844629, // ✅ YOUR REAL EVENT ID
         start: startTime,
         responses: {
           name,
-          email
+          email,
         },
         timeZone: "Africa/Johannesburg",
-        language: "en"
+        language: "en",
+        metadata: {}, // ✅ REQUIRED FIX
       },
       {
         headers: {
           Authorization: `Bearer ${CAL_API_KEY}`,
-          "Content-Type": "application/json"
-        }
+          "Content-Type": "application/json",
+        },
       }
     );
 
     res.json({
       success: true,
-      booking: response.data
+      booking: response.data,
     });
-
   } catch (error) {
     console.error(error.response?.data || error.message);
 
     res.status(500).json({
       success: false,
-      error: error.response?.data || error.message
+      error: error.response?.data || error.message,
     });
   }
 });
