@@ -72,7 +72,7 @@ app.listen(PORT, () => {
 });
  app.get("/events", async (req, res) => {
   try {
-    const response = await axios.get("https://api.cal.com/v1/event-types", {
+    const response = await axios.get("https://api.cal.com/v2/event-types", {
       headers: {
         Authorization: `Bearer ${process.env.CAL_API_KEY}`
       }
