@@ -56,3 +56,17 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+ app.get("/events", async (req, res) => {
+  try {
+    const response = await axios.get("https://api.cal.com/v1/event-types", {
+      headers: {
+        Authorization: `Bearer ${process.env.CAL_API_KEY}`
+      }
+    });
+
+    res.json(response.data);
+
+  } catch (error) {
+    res.status(500).json(error.response?.data || error.message);
+  }
+});
