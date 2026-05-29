@@ -11,13 +11,27 @@ const CAL_API_KEY = process.env.CAL_API_KEY;
 app.get("/", (req, res) => {
   res.send("Server is working");
 });
+app.get("/events", async (req, res) => {
+  try {
+    const response = await axios.get("https://api.cal.com/v2/event-types", {
+      headers: {
+        Authorization: `Bearer ${process.env.CAL_API_KEY}`
+      }
+    });
 
+    res.json(response.data);
+
+  } catch (error) {
+    console.error(error.response?.data || error.message);
+    res.status(500).json(error.response?.data || error.message);
+  }
+});
 app.post("/book", async (req, res) => {
   try {
     const { name, email, startTime } = req.body;
 
     const response = await axios.post(
-      "https://api.cal.com/v1/bookings",
+      ""https://api.cal.com/v2/bookings"",
       {
         eventTypeId: 1,
         start: startTime,
