@@ -56,9 +56,9 @@ app.post("/book", async (req, res) => {
     );
 
     res.json({
-      success: true,
-      booking: response.data,
-    });
+   success: true,
+   message: "Booking confirmed"
+   });
   } catch (error) {
     console.error(error.response?.data || error.message);
 
