@@ -34,7 +34,23 @@ app.post("/book", async (req, res) => {
     let formattedStartTime;
 
   try {
-  formattedStartTime = new Date(startTime).toISOString();
+  if (!startTime) {
+  return res.status(400).json({
+    success: false,
+    error: "Missing startTime"
+  });
+}
+
+const dateObj = new Date(startTime);
+
+if (isNaN(dateObj.getTime())) {
+  return res.status(400).json({
+    success: false,
+    error: "Invalid date format"
+  });
+}
+
+const formattedStartTime = dateObj.toISOString();
   } catch (e) {
    return res.status(400).json({
     success: false,
