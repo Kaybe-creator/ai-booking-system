@@ -1,3 +1,4 @@
+console.log("Incoming body:", req.body);
 require("dotenv").config();
 
 const express = require("express");
