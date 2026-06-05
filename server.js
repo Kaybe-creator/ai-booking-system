@@ -1,4 +1,3 @@
-console.log("Incoming body:", req.body);
 require("dotenv").config();
 
 const express = require("express");
@@ -32,6 +31,8 @@ app.get("/events", async (req, res) => {
 
 // Book appointment
 app.post("/book", async (req, res) => {
+  console.log("Incoming body:", req.body);
+  
   try {
     const { name, email, startTime, start_time } = req.body;
 
