@@ -8,10 +8,12 @@ app.use(express.json());
 
 const CAL_API_KEY = process.env.CAL_API_KEY;
 
+// Test route
 app.get("/", (req, res) => {
   res.send("Server is working");
 });
 
+// Get events
 app.get("/events", async (req, res) => {
   try {
     const response = await axios.get("https://api.cal.com/v2/event-types", {
@@ -27,42 +29,38 @@ app.get("/events", async (req, res) => {
   }
 });
 
+// Book appointment
 app.post("/book", async (req, res) => {
   try {
-    const { name, email, startTime } = req.body;
+    const { name, email, startTime, start_time } = req.body;
 
-    let formattedStartTime;
+    const finalStartTime = startTime || start_time;
 
-  try {
-  if (!startTime) {
-  return res.status(400).json({
-    success: false,
-    error: "Missing startTime"
-  });
-}
+    // ✅ Validate time
+    if (!finalStartTime) {
+      return res.status(400).json({
+        success: false,
+        error: "Missing startTime"
+      });
+    }
 
-const dateObj = new Date(startTime);
+    const dateObj = new Date(finalStartTime);
 
-if (isNaN(dateObj.getTime())) {
-  return res.status(400).json({
-    success: false,
-    error: "Invalid date format"
-  });
-}
+    if (isNaN(dateObj.getTime())) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid date format"
+      });
+    }
 
-const formattedStartTime = dateObj.toISOString();
-  } catch (e) {
-   return res.status(400).json({
-    success: false,
-    error: "Invalid date format"
-  });
-   }
+    const formattedStartTime = dateObj.toISOString();
 
+    // ✅ Send to Cal.com
     const response = await axios.post(
       "https://api.cal.com/v2/bookings",
       {
         eventTypeId: 5844629,
-        start: formattedStartTime,
+        start: formattedStartTime, // ✅ MUST be "start"
         responses: {
           name: name,
           email: email
@@ -78,9 +76,9 @@ const formattedStartTime = dateObj.toISOString();
       }
     );
 
+    // ✅ Retell-friendly response
     res.json({
-      success: true,
-    
+      success: true
     });
 
   } catch (error) {
