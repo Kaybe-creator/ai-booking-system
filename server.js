@@ -34,28 +34,27 @@ app.post("/book", async (req, res) => {
   console.log("Incoming body:", req.body);
   
   try {
-    const { name, email, startTime, start_time } = req.body;
+  const { name, email, startTime, start_time } = req.body;
 
-    const finalStartTime = startTime || start_time;
+const rawTime = startTime || start_time;
 
-    // ✅ Validate time
-    if (!finalStartTime) {
-      return res.status(400).json({
-        success: false,
-        error: "Missing startTime"
-      });
-    }
+if (!rawTime) {
+  return res.status(400).json({
+    success: false,
+    error: "Missing startTime"
+  });
+}
 
-    const dateObj = new Date(finalStartTime);
+let dateObj = new Date(rawTime);
 
-    if (isNaN(dateObj.getTime())) {
-      return res.status(400).json({
-        success: false,
-        error: "Invalid date format"
-      });
-    }
+if (isNaN(dateObj.getTime())) {
+  return res.status(400).json({
+    success: false,
+    error: "Invalid date format"
+  });
+}
 
-    const formattedStartTime = dateObj.toISOString();
+const formattedStartTime = dateObj.toISOString();
 
     // ✅ Send to Cal.com
     const response = await axios.post(
