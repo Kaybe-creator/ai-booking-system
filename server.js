@@ -1,10 +1,23 @@
+const express = require("express");
+const axios = require("axios");
+require("dotenv").config();
+
+const app = express();
+app.use(express.json());
+
+// HEALTH CHECK (so you know server is alive)
+app.get("/", (req, res) => {
+  res.send("Server is running");
+});
+
+// 🔥 BOOKING ROUTE (THIS IS THE ONLY PLACE req.body IS USED)
 app.post("/book", async (req, res) => {
   try {
     const { name, email, startTime, start_time } = req.body;
 
     let rawTime = startTime || start_time;
 
-    // 🔥 fallback if missing
+    // 🔥 fallback if AI fails to send time
     if (!rawTime) {
       console.log("No startTime provided, using fallback");
 
@@ -16,7 +29,8 @@ app.post("/book", async (req, res) => {
       rawTime = now.toISOString();
     }
 
-    let dateObj = new Date(rawTime);
+    // 🔥 validate & convert date
+    const dateObj = new Date(rawTime);
 
     if (isNaN(dateObj.getTime())) {
       return res.status(400).json({
@@ -27,7 +41,13 @@ app.post("/book", async (req, res) => {
 
     const formattedStartTime = dateObj.toISOString();
 
-    // 👇 your axios call stays the same
+    console.log("Incoming booking:", {
+      name,
+      email,
+      formattedStartTime
+    });
+
+    // 🔥 CAL.COM API CALL
     const response = await axios.post(
       "https://api.cal.com/v2/bookings",
       {
@@ -48,10 +68,23 @@ app.post("/book", async (req, res) => {
       }
     );
 
-    res.json({ success: true, data: response.data });
+    return res.json({
+      success: true,
+      data: response.data
+    });
 
   } catch (error) {
-    console.error(error.response?.data || error.message);
-    res.status(500).json({ success: false, error: "Booking failed" });
+    console.error("BOOKING ERROR:", error.response?.data || error.message);
+
+    return res.status(500).json({
+      success: false,
+      error: "Booking failed"
+    });
   }
+});
+
+// SERVER START
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
